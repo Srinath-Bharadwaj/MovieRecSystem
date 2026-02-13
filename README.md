@@ -5,7 +5,6 @@ Content-based movie recommendation system using TF-IDF vectorization and cosine 
 ## Features
 - TF-IDF vectorization for text analysis
 - Cosine similarity for finding similar movies
-- Flask web interface
 - Fast response time with optimized algorithm
 
 ## Setup
@@ -16,6 +15,7 @@ pip install -r requirements.txt
 ```
 
 2. Make sure `TMDB_movie_dataset_v11.csv` is in the project directory
+### This project does NOT include the dataset due to GitHub file size limits. To run the project locally and reproduce results, you must download the dataset manually from Kaggle.
 
 3. Run the app:
 ```bash
