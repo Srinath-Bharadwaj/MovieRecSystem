@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Movie Recommendation System</h1>
+        <p class="subtitle">Content-based filtering using TF-IDF & Cosine Similarity</p>
+        
+        <div class="search-box">
+            <form id="recommendForm">
+                <input type="text" id="movieInput" list="movieList" placeholder="Enter a movie title..." required>
+                <datalist id="movieList">
+                    {% for movie in movies %}
+                    <option value="{{ movie }}">
+                    {% endfor %}
+                </datalist>
+                <button type="submit">Get Recommendations</button>
+            </form>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">Finding recommendations...</div>
+        
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('recommendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const movie = document.getElementById('movieInput').value;
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            loading.style.display = 'block';
+            results.innerHTML = '';
+            
+            const formData = new FormData();
+            formData.append('movie', movie);
+            
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const recommendations = await response.json();
+                loading.style.display = 'none';
+                
+                if (recommendations.length === 0) {
+                    results.innerHTML = '<p class="no-results">No recommendations found. Try another movie!</p>';
+                    return;
+                }
+                
+                let html = '<h2>Recommended Movies:</h2><div class="movie-grid">';
+                recommendations.forEach(rec => {
+                    const similarity = (rec.similarity * 100).toFixed(1);
+                    html += `
+                        <div class="movie-card">
+                            <h3>${rec.title}</h3>
+                            <p>${rec.description}</p>
+                            <div class="similarity">Match: ${similarity}%</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                results.innerHTML = html;
+            } catch (error) {
+                loading.style.display = 'none';
+                results.innerHTML = '<p class="error">Error getting recommendations. Please try again.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

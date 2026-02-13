@@ -1,0 +1,6 @@
+*.zip
+*.csv
+Dataset.zip
+TMDB_movie_dataset_v11.csv
+__pycache__/
+*.pyc
